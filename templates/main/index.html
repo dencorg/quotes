@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% for quote in quotes %}
+
+        <blockquote
+            {% if quote.is_draft %}
+            class="draft"
+            {% endif %}
+            >
+
+            <p>{{ quote.text }}
+                {% if quote.is_draft %}
+                    <i>(Draft)</i>
+                {% endif %}
+            </p>
+            <footer>— {{ quote.author_name }}</footer>
+        </blockquote>
+
+    {% endfor %}
+
+{% endblock content %}
