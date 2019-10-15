@@ -15,9 +15,19 @@
                     <i>(Draft)</i>
                 {% endif %}
             </p>
-            <footer>— {{ quote.author_name }}</footer>
+            <footer>
+                — {{ quote.author_name }}
+                <a href="{% url "single" quote.id %}">View single</a>
+            </footer>
         </blockquote>
 
     {% endfor %}
+
+    <div>
+        <form action="/">
+            <input type="text" name="q">
+            <input type="submit" value="Filter">
+        </form>
+    </div>
 
 {% endblock content %}

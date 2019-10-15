@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
+{% block styles %}
+    <link rel="stylesheet" href="/static/css/style_single.css">
+{% endblock styles %}
+
 {% block content %}
 
     <blockquote class="single">
         <p>
-            {% if quote.is_draft %}
-                <i>(Draft)</i>
-            {% endif %}
-
             {{ quote.text }}
         </p>
         <footer>— {{ quote.author_name}}</footer>

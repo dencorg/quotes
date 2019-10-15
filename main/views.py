@@ -2,7 +2,13 @@ from django.shortcuts import render, get_object_or_404
 from .models import Quote
 
 def home(request):
-    quotes = Quote.objects.all().order_by('is_draft')
+
+    query = request.GET.get('q', None)
+
+    if query:
+        quotes = Quote.objects.filter(text__contains=query).order_by('is_draft')
+    else:
+        quotes = Quote.objects.all().order_by('is_draft')
 
     return render(request, 'main/index.html', {'quotes':quotes})
 
