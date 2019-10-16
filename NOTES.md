@@ -107,3 +107,57 @@ quotes = Quote.objects.all()
 ## Change the template
 
 Introduction to django template system. See Template inheritance (extends, blocks)
+
+Output variables in template. List all quotes via a for loop.
+
+```python
+{% block content %}
+
+    {% for quote in quotes %}
+
+        <blockquote
+            {% if quote.is_draft %}
+            class="draft"
+            {% endif %}
+            >
+
+            <p>{{ quote.text }}
+                {% if quote.is_draft %}
+                    <i>(Draft)</i>
+                {% endif %}
+            </p>
+            <footer>
+                — {{ quote.author_name }}
+            </footer>
+        </blockquote>
+
+    {% endfor %}
+
+{% endblock content %}
+```
+
+Add some css. Change the style.css
+
+```html
+blockquote {
+    margin: 0;
+}
+
+blockquote p {
+    padding: 15px;
+    background: #eee;
+    border-radius: 5px;
+}
+
+blockquote p::before {
+    content: '\201C';
+}
+
+blockquote p::after {
+    content: '\201D';
+}
+
+.draft {
+    opacity: 0.5;
+}
+```
