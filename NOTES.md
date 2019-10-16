@@ -104,11 +104,11 @@ Show all the quotes to the home view. Start with fetching all the quotes.
 quotes = Quote.objects.all()
 ```
 
-## Change the template
+## Change the template. List all quotes.
 
 Introduction to django template system. See Template inheritance (extends, blocks)
 
-Output variables in template. List all quotes via a for loop.
+Output variables in template. List all quotes with a for loop.
 
 ```python
 {% block content %}
@@ -161,3 +161,114 @@ blockquote p::after {
     opacity: 0.5;
 }
 ```
+
+## Show a single quote
+
+Change the urls.py, views.py files.
+
+Add a single.html template file.
+
+## Show a single quote via dynamic routing
+
+Make the route dynamic. Change views.py and urls.py accordingly.
+
+```python
+
+from django.conf.urls import url
+from django.urls import path
+from django.contrib import admin
+from main import views
+
+urlpatterns = [
+    url(r'^admin/', admin.site.urls),
+    url(r'^$', views.home, name='home'),
+    path('quotes/<int:id>/', views.single_quote, name='single'),
+]
+```
+
+## 404 error handling
+
+Watch what happens if quote does not exist
+
+Catch the exception:
+
+```python
+from django.http import Http404
+...
+    try:
+        p = Quote.objects.get(pk=id)
+    except Quote.DoesNotExist:
+        raise Http404("Quote does not exist")
+```
+
+Or use the get_object_or_404 shortcut helper function:
+
+```python
+from django.shortcuts import get_object_or_404
+...
+quote = get_object_or_404(Quote, pk=id)
+```
+
+Add a 404.html template file. Shows only when DEBUG = False in settings.py
+
+## Single quote styles
+
+Override the default styles from base.html.
+
+Create style_single.css file with some new fancy styling.
+
+```html
+@import url('https://fonts.googleapis.com/css?family=Special+Elite');
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: 'Special Elite', cursive;
+    background: #fffdf5;
+    color: #3f3f5a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+blockquote {
+    font-weight: 100;
+    font-size: 2rem;
+    max-width: 600px;
+    line-height: 1.4;
+    position: relative;
+    margin: 0;
+    padding: .5rem;
+}
+
+blockquote:before,
+blockquote:after {
+    position: absolute;
+    color: #f1efe6;
+    font-size: 8rem;
+    width: 4rem;
+    height: 4rem;
+}
+
+blockquote:before {
+    content: '“';
+    left: -5rem;
+    top: -2rem;
+}
+
+blockquote:after {
+    content: '”';
+    right: -5rem;
+    bottom: 1rem;
+}
+
+cite {
+    line-height: 3;
+    text-align: left;
+}
+```
+
