@@ -19,3 +19,7 @@ blockquote p::after {
 .draft {
     opacity: 0.5;
 }
+
+form {
+    margin: 20px;
+}
