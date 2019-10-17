@@ -344,6 +344,7 @@ Run the migrations.
 Add Author model to admin site. Create Author model and assign it to some quotes.
 
 Explore one to many relationship api.
+Reference: https://docs.djangoproject.com/en/2.2/topics/db/examples/many_to_one/
 
 ```python
 from main.models import Author, Quote
