@@ -95,6 +95,7 @@ Check the migrations generated file.
 * Modify an object
 * Save an object in db
 
+Reference: https://docs.djangoproject.com/en/2.2/topics/db/queries/
 
 ## Create the home view
 
@@ -102,6 +103,12 @@ Show all the quotes to the home view. Start with fetching all the quotes.
 
 ```python
 quotes = Quote.objects.all()
+```
+
+Order the quotes. Draft quotes to the bottom.
+
+```python
+quotes = Quote.objects.all().order_by('is_draft')
 ```
 
 ## Change the template. List all quotes.
@@ -270,5 +277,65 @@ cite {
     line-height: 3;
     text-align: left;
 }
+```
+
+## Filter quotes
+
+Add a form input to filter the quotes displayed.
+
+Get the request input via request.GET dictionary
+
+```python
+query = request.GET.get('q', None)
+```
+
+Use the filter method get the quotes that match.
+
+```python
+quotes = Quote.objects.filter(text__contains=query)
+
+```
+
+## Get a random quote
+
+Change the urls.py, views.py files to add the random route.
+
+Use the same template file single.html. Add I'm feeling lucky option in index.html.
+
+Fetch only the non draft quotes. Use the random module to make the random choice from the fetched quotes.
+
+```python
+import random
+
+...
+    quotes = Quote.objects.filter(is_draft=False)
+    random_quote = random.choice(quotes)
+```
+
+## Create an author model, make one to many relationship
+
+Create an Author model with a name text field.
+
+```python
+from django.db import models
+from django.utils.timezone import now
+
+class Author(models.Model):
+    name = models.CharField(max_length=255, default='Unknown')
+
+    def __str__(self):
+        return self.name
+
+
+class Quote(models.Model):
+    text = models.TextField(blank=False, null=False)
+    # author_name = models.CharField(max_length=255, default='Unknown')
+    is_draft = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=now)
+
+    author = models.ForeignKey(Author, null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.text
 ```
 
