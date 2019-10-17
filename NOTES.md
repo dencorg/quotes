@@ -312,7 +312,7 @@ import random
     random_quote = random.choice(quotes)
 ```
 
-## Create an author model, make one to many relationship
+## Create an author model (one to many relationship)
 
 Create an Author model with a name text field.
 
@@ -337,5 +337,23 @@ class Quote(models.Model):
 
     def __str__(self):
         return self.text
+```
+
+Run the migrations.
+
+Add Author model to admin site. Create Author model and assign it to some quotes.
+
+Explore one to many relationship api.
+
+```python
+from main.models import Author, Quote
+
+author = Author.objects.get(pk=1)
+author.quote_set.all()
+author.quote_set.filter(text__contains='value')
+
+quote = Quote.objects.get(pk=1)
+quote.author
+quote.author.name
 ```
 
