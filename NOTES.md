@@ -130,6 +130,8 @@ Introduction to django template system. See Template inheritance (extends, block
 Output variables in template. List all quotes with a for loop.
 
 ```python
+{% extends "base.html" %}
+
 {% block content %}
 
     {% for quote in quotes %}
