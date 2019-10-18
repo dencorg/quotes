@@ -37,8 +37,11 @@ Create the first version of the Quote model
 Add the text field and the author name
 
 ```python
-text = models.TextField(blank=False, null=False)
-author_name = models.CharField(max_length=255, default='Unknown')
+from django.db import models
+
+class Quote(models.Model):
+    text = models.TextField(blank=False, null=False)
+    author_name = models.CharField(max_length=255, default='Unknown')
 ```
 
 ## See the model in the Admin site
@@ -62,7 +65,7 @@ admin.site.register(Quote)
 
 3. Explore the admin page
 4. Add some Quotes (you can find some quotes here: https://www.keepinspiring.me/famous-quotes/)
-5. Add str dunder method in model to look better in admin index page
+5. Add str dunder method in Quote model to look better in admin index page
 ```python
 
 def __str__(self):
@@ -109,6 +112,15 @@ Order the quotes. Draft quotes to the bottom.
 
 ```python
 quotes = Quote.objects.all().order_by('is_draft')
+```
+
+The view becomes
+
+```python
+def home(request):
+    quotes = Quote.objects.all().order_by('is_draft')
+
+    return render(request, 'main/index.html', {'quotes':quotes})
 ```
 
 ## Change the template. List all quotes.
@@ -171,13 +183,51 @@ blockquote p::after {
 
 ## Show a single quote
 
-Change the urls.py, views.py files.
+Change the urls.py file.
+```python
+
+from django.conf.urls import url
+from django.urls import path
+from django.contrib import admin
+from main import views
+
+urlpatterns = [
+    url(r'^admin/', admin.site.urls),
+    url(r'^$', views.home, name='home'),
+    path('quotes/single/', views.single_quote, name='single'),
+]
+```
+
+Add single_quote view to the views.py file to fetch the quote with id=1.
+```python
+def single_quote(request):
+    quote = Quote.objects.get(pk=1)
+
+    return render(request, 'main/single.html', {'quote':quote})
+```
 
 Add a single.html template file.
+
+```python
+{% extends "base.html" %}
+
+{% block content %}
+
+    <blockquote class="single">
+        <p>
+            {{ quote.text }}
+        </p>
+        <footer>— {{ quote.author_name}}</footer>
+    </blockquote>
+
+{% endblock content %}
+```
 
 ## Show a single quote via dynamic routing
 
 Make the route dynamic. Change views.py and urls.py accordingly.
+
+The urls.py becomes:
 
 ```python
 
@@ -193,6 +243,14 @@ urlpatterns = [
 ]
 ```
 
+The views.py file becomes:
+```python
+def single_quote(request, id):
+    quote = Quote.objects.get(pk=id)
+
+    return render(request, 'main/single.html', {'quote':quote})
+```
+
 ## 404 error handling
 
 Watch what happens if quote does not exist
@@ -201,19 +259,25 @@ Catch the exception:
 
 ```python
 from django.http import Http404
-...
+
+def single_quote(request, id):
     try:
-        p = Quote.objects.get(pk=id)
+        quote = Quote.objects.get(pk=id)
     except Quote.DoesNotExist:
         raise Http404("Quote does not exist")
+
+    return render(request, 'main/single.html', {'quote':quote})
 ```
 
 Or use the get_object_or_404 shortcut helper function:
 
 ```python
-from django.shortcuts import get_object_or_404
-...
-quote = get_object_or_404(Quote, pk=id)
+from django.shortcuts import render, get_object_or_404
+
+def single_quote(request, id):
+    quote = get_object_or_404(Quote, pk=id)
+
+    return render(request, 'main/single.html', {'quote':quote})
 ```
 
 Add a 404.html template file. Shows only when DEBUG = False in settings.py
@@ -296,21 +360,44 @@ quotes = Quote.objects.filter(text__contains=query)
 
 ```
 
+The home view becomes:
+```python
+def home(request):
+    query = request.GET.get('q', None)
+
+    if query:
+        quotes = Quote.objects.filter(text__contains=query).order_by('is_draft')
+    else:
+        quotes = Quote.objects.all().order_by('is_draft')
+
+    return render(request, 'main/index.html', {'quotes':quotes})
+```
+
 ## Get a random quote
 
 Change the urls.py, views.py files to add the random route.
 
-Use the same template file single.html. Add I'm feeling lucky option in index.html.
+Add to urls.py file:
+```python
+path('random/', views.random_quote, name='random')
+```
 
-Fetch only the non draft quotes. Use the random module to make the random choice from the fetched quotes.
+Fetch only the non draft quotes.
+Use the random module to make the random choice from the fetched quotes.
+Use the same template file single.html
 
+Add to views.py file.
 ```python
 import random
 
-...
+def random_quote(request):
     quotes = Quote.objects.filter(is_draft=False)
     random_quote = random.choice(quotes)
+
+    return render(request, 'main/single.html', {'quote':random_quote})
 ```
+
+Add I'm feeling lucky option in index.html.
 
 ## Create an author model (one to many relationship)
 
@@ -341,7 +428,17 @@ class Quote(models.Model):
 
 Run the migrations.
 
-Add Author model to admin site. Create Author model and assign it to some quotes.
+Add Author model to admin site. The admin.py file becomes:
+```python
+from django.contrib import admin
+
+from .models import Quote, Author
+
+admin.site.register(Quote)
+admin.site.register(Author)
+```
+
+Log in to the admin, create an Author and assign it to some quotes.
 
 Explore one to many relationship api.
 Reference: https://docs.djangoproject.com/en/2.2/topics/db/examples/many_to_one/
