@@ -129,6 +129,8 @@ Introduction to django template system. See Template inheritance (extends, block
 
 Output variables in template. List all quotes with a for loop.
 
+The index.html file (templates/main/index.html) becomes:
+
 ```python
 {% extends "base.html" %}
 
@@ -157,7 +159,7 @@ Output variables in template. List all quotes with a for loop.
 {% endblock content %}
 ```
 
-Add some css. Change the style.css
+Add some css. Change the static/css/style.css file to:
 
 ```html
 blockquote {
@@ -208,7 +210,7 @@ def single_quote(request):
     return render(request, 'main/single.html', {'quote':quote})
 ```
 
-Add a single.html template file.
+Add a single.html template file (templates/main/single.html).
 
 ```python
 {% extends "base.html" %}
@@ -282,13 +284,30 @@ def single_quote(request, id):
     return render(request, 'main/single.html', {'quote':quote})
 ```
 
-Add a 404.html template file. Shows only when DEBUG = False in settings.py
+Add a 404.html template file (in templates/ directory). Note that it is shown only when DEBUG = False in settings.py
+```html
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quote not found</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+</head>
+<body>
+    <h1>Quote not found!</h1>
+</body>
+</html>
+```
 
 ## Single quote styles
 
 Override the default styles from base.html.
 
-Create style_single.css file with some new fancy styling.
+Create style_single.css file (static/css/style_single.css) with some new fancy styling.
 
 ```html
 @import url('https://fonts.googleapis.com/css?family=Special+Elite');
