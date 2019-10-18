@@ -307,6 +307,13 @@ Add a 404.html template file (in templates/ directory). Note that it is shown on
 
 Override the default styles from base.html.
 
+Change base.html. Add a new block around css.
+```python
+{% block styles %}
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+{% endblock styles %}
+```
+
 Create style_single.css file (static/css/style_single.css) with some new fancy styling.
 
 ```html
@@ -362,6 +369,26 @@ cite {
     line-height: 3;
     text-align: left;
 }
+```
+
+Change single.html to override styles block. single.html becomes:
+```python
+{% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="/static/css/style_single.css">
+{% endblock styles %}
+
+{% block content %}
+
+    <blockquote class="single">
+        <p>
+            {{ quote.text }}
+        </p>
+        <footer>— {{ quote.author_name}}</footer>
+    </blockquote>
+
+{% endblock content %}
 ```
 
 ## Filter quotes
